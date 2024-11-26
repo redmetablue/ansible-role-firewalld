@@ -36,7 +36,7 @@
     - firewalld_show_config
 
 - name: firewalld | Check for problem services
-  command: systemctl show -p UnitFileState -p SubState {{ item }} warn=false
+  command: systemctl show -p UnitFileState -p SubState {{ item }}
   register: stat_service_bad
   # failed_when: ("SubState=running" in stat_service_bad.stdout) or ("UnitFileState=enabled" in stat_service_bad.stdout)
   # ignore_errors: true
@@ -90,7 +90,7 @@
     - firewalld_pkg_install
 
 - name: firewalld | check version
-  command: firewall-offline-cmd -V warn=false
+  command: firewall-offline-cmd -V
   register: stat_service_firewalld_version
   failed_when: false
   ignore_errors: true
@@ -115,7 +115,7 @@
     - firewalld
 
 - name: firewalld | check if running
-  command: systemctl status firewalld warn=false
+  command: systemctl status firewalld
   register: stat_service_firewalld_status
   failed_when: false
   ignore_errors: true
@@ -161,7 +161,7 @@
 #get active services
 #when item not in service list, firewalld reload is needed to see item in service list so can add to zone
 - name: firewalld | Get active services to determine if reload needed
-  command: firewall-offline-cmd --get-services warn=false
+  command: firewall-offline-cmd --get-services
   register: stat_service_firewalld_services
   failed_when: false
   ignore_errors: true
@@ -221,7 +221,7 @@
 #    - ansible_distribution_major_version == '7'
     - firewalld_managed|bool
     - item.state == 'enabled'
-    - 'item.name not in stat_service_firewalld_services.stdout.split()'
+    - 'item.name not in stat_service_firewalld_servstat_service_firewalld_servicesices.stdout.split()'
   loop_control:
     label: "Created service name: {{ item.name }}"
   tags:
@@ -319,7 +319,7 @@
 #DONE: how to 'change' a port that's defined?? Can only 'disable' entire service.
 #      Can add new ports. But not remove existing.
 #firewall-offline-cmd --service=zabbix-agent --get-ports
-#Remove ports in output of above command that aren't in variable provided. 
+#Remove ports in output of above command that aren't in variable provided.
 #Can't because built-in services I don't have ports for! Means all ports need to be defined!
 #DONE: add strict mode so this can be disabled (by default?). Not needed. Just dont remove ports if port_protocol is undefined.
 #TODO: Seems like round-about way to do this. Shorten somehow?
@@ -688,7 +688,7 @@
     - firewalld_start
 
 - name: firewalld | check if running
-  command: systemctl status firewalld warn=false
+  command: systemctl status firewalld
   register: stat_service_firewalld_status_end
   failed_when: not stat_service_firewalld_status_end.rc == 0
   # ignore_errors: true
